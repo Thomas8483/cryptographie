@@ -3,8 +3,11 @@ import subprocess
 
 app = Flask(__name__, static_folder='static')
 
+
 @app.route('/', methods=['GET', 'POST'])
 def create_csr():
+    print(request)
+    print(request.form)
     if request.method == 'POST':
         request.environ['CONTENT_TYPE'] = 'application/json'
         name = request.form['name']
@@ -48,6 +51,7 @@ def create_csr():
                 <input type="submit" value="Submit">
             </form>
         '''
+
 
 if __name__ == '__main__':
     app.run()
