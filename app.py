@@ -19,6 +19,7 @@ def create_csr():
         unit = request.form['unit']
         cn = request.form['cn']
         cmd = f"./static/createCSR.sh '{name}' '{email}' '{country}' '{state}' '{city}' '{org}' '{unit}' '{cn}'"
+        print(cmd)
         output = subprocess.check_output(cmd, shell=True)
         return output
     else:
