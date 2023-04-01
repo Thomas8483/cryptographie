@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-# Parse the form data from the QUERY_STRING
 name=$1
 email=$2
 country=$3
@@ -11,6 +9,7 @@ org=$6
 unit=$7
 cn=$8
 
+# Génération de la paire de clé
 openssl genpkey -algorithm RSA -out $cn.key -aes256 -pass pass:"isen"
 
 # Use the form data to create the CSR using openssl req
