@@ -1,0 +1,15 @@
+1) ACR
+
+openssl genpkey -algorithm RSA -out rootca.key -aes256
+
+openssl req -new -x509 -key rootca.key -out rootca.crt -days 3650
+
+
+2)
+
+openssl genpkey -algorithm RSA -out intermediate.key -aes256
+
+openssl req -new -key intermediate.key -out intermediate.csr
+
+openssl x509 -req -in ACI/intermediate.csr -CA ACR/rootCA.crt -CAkey ACR/rootCA.key -CAcreateserial -out ACI/intermediateCA.crt -days 3650
+
