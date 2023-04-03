@@ -1,7 +1,26 @@
 from flask import Flask, request
 import subprocess
+import smtplib
+import ssl
+import random
 
 app = Flask(__name__, static_folder='static')
+
+# Mail
+sender_email = 'test13@mailfence.com'
+smtp_server = 'smtp.mailfence.com'
+smtp_port = 465
+smtp_username = 'test13'
+smtp_password = 'suwtov-zuFza6-mokhus'
+context = ssl.create_default_context()
+subject = "CSR"
+
+
+def generate_validation_code():
+    code = ""
+    for i in range(6):
+        code += str(random.randint(0, 9))
+    return code
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -18,6 +37,22 @@ def create_csr():
         org = request.form['org']
         unit = request.form['unit']
         cn = request.form['cn']
+
+        # Envoi d'un code de vérification à l'adresse mail fournie
+
+        # Connexion au serveur SMTP
+        server = smtplib.SMTP_SSL(smtp_server, smtp_port, context=context)
+        server.login(smtp_username, smtp_password)
+
+        validation_code = generate_validation_code()
+        body = "Vous avez fait une demande de CSR, le code de validation est " + validation_code
+        message = f"Subject: {subject}\nFrom: {sender_email}\nTo: {email}\n\n{body}"
+        server.sendmail(sender_email, email, message)
+        server.quit()
+
+        print("Code de vérification envoyé")
+
+        # Création du CSR
         cmd = f"./static/createCSR.sh '{name}' '{email}' '{country}' '{state}' '{city}' '{org}' '{unit}' '{cn}'"
         output = subprocess.check_output(cmd, shell=True)
         return output
