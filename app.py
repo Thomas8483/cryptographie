@@ -26,7 +26,7 @@ def generate_validation_code():
 
 
 @app.route('/', methods=['GET', 'POST'])
-def create_csr():
+def main():
     print(request.form)
     if request.method == 'POST':
         request.environ['CONTENT_TYPE'] = 'application/json'
@@ -102,7 +102,8 @@ def verify():
         unit = liste_info[6]
         cn = liste_info[7]
         validation_code = liste_info[8]
-        # Compare user_code with the validation_code generated earlier
+
+        # Si l'utilisateur a saisi le bon code
         if user_code == validation_code:
             # Création du CSR
             cmd = f"./static/createCSR.sh '{name}' '{email}' '{country}' '{state}' '{city}' '{org}' '{unit}' '{cn}'"
