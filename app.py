@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, redirect
 import subprocess
 import smtplib
 import ssl
@@ -15,6 +15,8 @@ smtp_password = 'suwtov-zuFza6-mokhus'
 context = ssl.create_default_context()
 subject = "CSR"
 
+liste_info = []
+
 
 def generate_validation_code():
     code = ""
@@ -25,7 +27,6 @@ def generate_validation_code():
 
 @app.route('/', methods=['GET', 'POST'])
 def create_csr():
-    print(request)
     print(request.form)
     if request.method == 'POST':
         request.environ['CONTENT_TYPE'] = 'application/json'
@@ -38,13 +39,15 @@ def create_csr():
         unit = request.form['unit']
         cn = request.form['cn']
 
-        # Envoi d'un code de vérification à l'adresse mail fournie
+        liste_info.extend([name, email, country, state, city, org, unit, cn])
 
+        # Envoi d'un code de vérification à l'adresse mail fournie
         # Connexion au serveur SMTP
         server = smtplib.SMTP_SSL(smtp_server, smtp_port, context=context)
         server.login(smtp_username, smtp_password)
 
         validation_code = generate_validation_code()
+        liste_info.append(validation_code)
         body = "Vous avez fait une demande de CSR, le code de validation est " + validation_code
         message = f"Subject: {subject}\nFrom: {sender_email}\nTo: {email}\n\n{body}"
         server.sendmail(sender_email, email, message)
@@ -52,10 +55,8 @@ def create_csr():
 
         print("Code de vérification envoyé")
 
-        # Création du CSR
-        cmd = f"./static/createCSR.sh '{name}' '{email}' '{country}' '{state}' '{city}' '{org}' '{unit}' '{cn}'"
-        output = subprocess.check_output(cmd, shell=True)
-        return output
+        return redirect('/static/verification.html')
+
     else:
         return '''
             <form method="post">
@@ -86,6 +87,27 @@ def create_csr():
                 <input type="submit" value="Submit">
             </form>
         '''
+
+
+@app.route('/static/verification.html', methods=['POST'])
+def verify():
+    if request.method == 'POST':
+        user_code = request.form['code']
+        name = liste_info[0]
+        email = liste_info[1]
+        country = liste_info[2]
+        state = liste_info[3]
+        city = liste_info[4]
+        org = liste_info[5]
+        unit = liste_info[6]
+        cn = liste_info[7]
+        validation_code = liste_info[8]
+        # Compare user_code with the validation_code generated earlier
+        if user_code == validation_code:
+            # Création du CSR
+            cmd = f"./static/createCSR.sh '{name}' '{email}' '{country}' '{state}' '{city}' '{org}' '{unit}' '{cn}'"
+            output = subprocess.check_output(cmd, shell=True)
+            return output
 
 
 if __name__ == '__main__':
