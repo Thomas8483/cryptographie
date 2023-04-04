@@ -2,8 +2,9 @@ import random
 import smtplib
 import ssl
 import subprocess
+import re
 
-from flask import Flask, request, redirect, abort
+from flask import Flask, request, redirect, render_template
 
 app = Flask(__name__, static_folder='static')
 
@@ -17,6 +18,7 @@ context = ssl.create_default_context()
 subject = "CSR"
 
 liste_info = []
+user_info = []
 
 
 def generate_validation_code():
@@ -26,20 +28,26 @@ def generate_validation_code():
     return code
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 def main():
+    return redirect('/formulaire.html')
+
+
+@app.route('/formulaire.html', methods=['GET', 'POST'])
+def formulaire():
     print(request.form)
     if request.method == 'POST':
         request.environ['CONTENT_TYPE'] = 'application/json'
-        name = request.form['name']
-        email = request.form['email']
-        country = request.form['country']
-        state = request.form['state']
-        city = request.form['city']
-        org = request.form['org']
-        unit = request.form['unit']
-        cn = request.form['cn']
+        name = request.form['Name']
+        email = request.form['Email']
+        country = request.form['Country']
+        state = request.form['State']
+        city = request.form['City']
+        org = request.form['Organization']
+        unit = request.form['Unit']
+        cn = request.form['CN']
 
+        liste_info.clear()
         liste_info.extend([name, email, country, state, city, org, unit, cn])
 
         # Envoi d'un code de vérification à l'adresse mail fournie
@@ -56,44 +64,19 @@ def main():
 
         print("Code de vérification envoyé")
 
-        return redirect('/static/verification.html')
+        return redirect('verification.html')
 
     else:
-        return '''
-            <form method="post">
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name"><br><br>
-
-                <label for="email">Email:</label>
-                <input type="text" id="email" name="email"><br><br>
-
-                <label for="country">Country:</label>
-                <input type="text" id="country" name="country"><br><br>
-
-                <label for="state">State:</label>
-                <input type="text" id="state" name="state"><br><br>
-
-                <label for="city">City:</label>
-                <input type="text" id="city" name="city"><br><br>
-
-                <label for="org">Organization:</label>
-                <input type="text" id="org" name="org"><br><br>
-
-                <label for="unit">Organizational Unit:</label>
-                <input type="text" id="unit" name="unit"><br><br>
-
-                <label for="cn">Common Name:</label>
-                <input type="text" id="cn" name="cn"><br><br>
-
-                <input type="submit" value="Submit">
-            </form>
-        '''
+        return render_template('formulaire.html')
 
 
-@app.route('/static/verification.html', methods=['POST'])
+@app.route('/verification.html', methods=['GET', 'POST'])
 def verify():
+    print(request.form)
     if request.method == 'POST':
+        request.environ['CONTENT_TYPE'] = 'application/json'
         user_code = request.form['code']
+
         name = liste_info[0]
         email = liste_info[1]
         country = liste_info[2]
@@ -104,17 +87,44 @@ def verify():
         cn = liste_info[7]
         validation_code = liste_info[8]
 
+        user_info.clear()
+        user_info.extend([country, state, city, org, unit, cn])
+
         # Si l'utilisateur a saisi le bon code
         if user_code == validation_code:
+
+            print("Code de validation correct")
+
             # Création du CSR
             cmd = f"./static/createCSR.sh '{name}' '{email}' '{country}' '{state}' '{city}' '{org}' '{unit}' '{cn}'"
-            output = subprocess.check_output(cmd, shell=True)
-            return output
+            subprocess.check_output(cmd, shell=True)
+            print("CSR créé")
+
+            # Vérification du CSR
+            csr_file = cn + ".csr"
+            cmd = "openssl req -noout -subject -in {}".format(csr_file)
+            subject_line = subprocess.check_output(cmd, shell=True).decode().strip()
+
+            # Use regular expressions to extract the values from the subject string
+            matches = re.findall(r'/(\w+)=([\w.]+)', subject_line)
+
+            # Create a dictionary from the matches
+            dict_matches = dict(matches)
+
+            # Check if the values are in the dictionary
+            if all(value in dict_matches.values() for value in user_info):
+                print("CSR correct")
+            else:
+                print("Error(s) in CSR")
+
+            return render_template('success.html')
 
         else:
-            # Return 400 Bad Request error message if validation code is incorrect
-            error_message = "Invalid validation code. Please try again."
-            abort(400, error_message)
+            print("Code erroné")
+            return render_template('error.html')
+
+    else:
+        return render_template('verification.html')
 
 
 if __name__ == '__main__':
