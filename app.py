@@ -4,7 +4,7 @@ import ssl
 import subprocess
 import re
 
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, send_file
 
 app = Flask(__name__, static_folder='static')
 
@@ -125,6 +125,12 @@ def verify():
 
     else:
         return render_template('verification.html')
+
+
+@app.route('/download', methods=['GET'])
+def download():
+    certificate_name = liste_info[7] + ".csr"
+    return send_file(certificate_name, as_attachment=True)
 
 
 if __name__ == '__main__':
