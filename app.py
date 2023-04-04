@@ -105,17 +105,15 @@ def verify():
             cmd = "openssl req -noout -subject -in {}".format(csr_file)
             subject_line = subprocess.check_output(cmd, shell=True).decode().strip()
 
-            # Use regular expressions to extract the values from the subject string
+            # Analyse du CSR
             matches = re.findall(r'/(\w+)=([\w.]+)', subject_line)
-
-            # Create a dictionary from the matches
             dict_matches = dict(matches)
 
-            # Check if the values are in the dictionary
+            # Comparaison du CSR et des valeurs demandées
             if all(value in dict_matches.values() for value in user_info):
                 print("CSR correct")
             else:
-                print("Error(s) in CSR")
+                print("Erreur(s) dans le CSR")
                 return render_template('error.html')
 
             # Création du CRT
@@ -128,7 +126,7 @@ def verify():
             return render_template('success.html')
 
         else:
-            print("Code erroné")
+            print("Code de vérification erroné")
             return render_template('error.html')
 
     else:
