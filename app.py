@@ -116,6 +116,14 @@ def verify():
                 print("CSR correct")
             else:
                 print("Error(s) in CSR")
+                return render_template('error.html')
+
+            # Création du CRT
+            crt_file = cn + ".crt"
+            cmd = "openssl x509 -req -in " + csr_file + " -CA ACI/intermediateCA.crt -CAkey ACI/intermediate.key -CAcreateserial -out " + crt_file + " -days 365 -sha256 -passin pass:" + "isen"
+            subprocess.check_output(cmd, shell=True)
+
+            print("CRT créé")
 
             return render_template('success.html')
 
@@ -129,7 +137,7 @@ def verify():
 
 @app.route('/download', methods=['GET'])
 def download():
-    certificate_name = liste_info[7] + ".csr"
+    certificate_name = liste_info[7] + ".crt"
     return send_file(certificate_name, as_attachment=True)
 
 
