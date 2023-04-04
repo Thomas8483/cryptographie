@@ -1,8 +1,9 @@
-from flask import Flask, request, redirect
-import subprocess
+import random
 import smtplib
 import ssl
-import random
+import subprocess
+
+from flask import Flask, request, redirect, abort
 
 app = Flask(__name__, static_folder='static')
 
@@ -48,7 +49,7 @@ def main():
 
         validation_code = generate_validation_code()
         liste_info.append(validation_code)
-        body = "Vous avez fait une demande de CSR, le code de validation est " + validation_code
+        body = "Vous avez fait une demande de CSR pour " + cn + ". Le code de validation est " + validation_code
         message = f"Subject: {subject}\nFrom: {sender_email}\nTo: {email}\n\n{body}"
         server.sendmail(sender_email, email, message)
         server.quit()
@@ -109,6 +110,11 @@ def verify():
             cmd = f"./static/createCSR.sh '{name}' '{email}' '{country}' '{state}' '{city}' '{org}' '{unit}' '{cn}'"
             output = subprocess.check_output(cmd, shell=True)
             return output
+
+        else:
+            # Return 400 Bad Request error message if validation code is incorrect
+            error_message = "Invalid validation code. Please try again."
+            abort(400, error_message)
 
 
 if __name__ == '__main__':
