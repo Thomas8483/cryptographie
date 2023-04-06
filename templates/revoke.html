@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Revoke</title>
+    <link rel="stylesheet" href="../static/formulaire.css" type="text/css" media="all"/>
+</head>
+
+<body>
+<div class="main-w3layouts wrapper">
+    <h1>Revoke a certificate</h1>
+    <div class="main-agileinfo">
+        <div class="agileits-top">
+            <form method="post" action="/revoke.html">
+                <input class="text email" type="email" name="Email" placeholder="Email" required="">
+                <input class="text" type="text" id="id_cert" name="Id" placeholder="Certificate ID" required="">
+                <input class="text" type="text" id="OTP" name="OTP" placeholder="OTP" required="">
+                <div class="wthree-text">
+                    <div class="clear"></div>
+                </div>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

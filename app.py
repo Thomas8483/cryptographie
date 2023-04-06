@@ -18,6 +18,7 @@ context = ssl.create_default_context()
 subject = "CSR"
 
 liste_info = []
+liste_info_revoke = []
 user_info = []
 
 
@@ -36,6 +37,29 @@ def main():
 @app.route('/home.html', methods=['GET'])
 def home():
     return render_template('home.html')
+
+
+# TODO: Révoquer le certificat(Faire une liste de certificats valides(OCSP))
+@app.route('/revoke.html', methods=['GET', 'POST'])
+def revoke():
+    print(request.form)
+    if request.method == 'POST':
+        request.environ['CONTENT_TYPE'] = 'application/json'
+        email = request.form['Email']
+        id_certificate = request.form['Id']
+        otp = request.form['OTP']
+
+        liste_info_revoke.clear()
+        liste_info_revoke.extend([email, id_certificate, otp])
+
+        # Révoquer le certificat
+
+        print("Certificat révoqué")
+
+        return render_template('revoke_success.html')
+
+    else:
+        return render_template('revoke.html')
 
 
 @app.route('/form.html', methods=['GET', 'POST'])
