@@ -164,9 +164,9 @@ def verify():
 
 @app.route('/download', methods=['GET'])
 def download():
+    key_name = liste_info[7] + ".key"
     certificate_name = liste_info[7] + ".crt"
-    return send_file(certificate_name, as_attachment=True)
-
+    return send_file(certificate_name, key_name, as_attachment=True)
 
 if __name__ == '__main__':
     app.run()
