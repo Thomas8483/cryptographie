@@ -30,10 +30,15 @@ def generate_validation_code():
 
 @app.route('/', methods=['GET'])
 def main():
-    return redirect('/formulaire.html')
+    return redirect('/home.html')
 
 
-@app.route('/formulaire.html', methods=['GET', 'POST'])
+@app.route('/home.html', methods=['GET'])
+def home():
+    return render_template('home.html')
+
+
+@app.route('/form.html', methods=['GET', 'POST'])
 def formulaire():
     print(request.form)
     if request.method == 'POST':
@@ -57,7 +62,7 @@ def formulaire():
 
         validation_code = generate_validation_code()
         liste_info.append(validation_code)
-        body = "Vous avez fait une demande de CSR pour " + cn + ". Le code de validation est " + validation_code
+        body = "Vous avez fait une CSR pour " + cn + ". \nLe code de validation est " + validation_code
         message = f"Subject: {subject}\nFrom: {sender_email}\nTo: {email}\n\n{body}"
         server.sendmail(sender_email, email, message)
         server.quit()
@@ -67,7 +72,7 @@ def formulaire():
         return redirect('verification.html')
 
     else:
-        return render_template('formulaire.html')
+        return render_template('form.html')
 
 
 @app.route('/verification.html', methods=['GET', 'POST'])

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" href="../static/formulaire.css" type="text/css" media="all"/>
+    <script>
+          function create() {
+              window.location.href = "/formulaire.html";
+          }
+
+          function revoke() {
+              window.location.href = "/revoke.html";
+          }
+    </script>
+</head>
+
+<body>
+<div class="main-w3layouts wrapper">
+    <h1>Certificate handling</h1>
+    <div class="main-agileinfo">
+        <div class="agileits-top">
+            <h2>Create a certificate</h2>
+            <input type="submit" value="CREATE" onclick="create()">
+
+            <div class="wthree-text">
+                <div class="clear"></div>
+            </div>
+            <h2>Revoke a certificate</h2>
+            <input type="submit" value="REVOKE" onclick="revoke()">
+        </div>
+    </div>
+</div>
+</body>
+</html>
