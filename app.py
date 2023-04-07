@@ -131,11 +131,13 @@ def verify():
 
             # Vérification du CSR
             csr_file = cn + ".csr"
+            # csr_file = "test13@mailfence.com.csr"
             cmd = "openssl req -noout -subject -in {}".format(csr_file)
             subject_line = subprocess.check_output(cmd, shell=True).decode().strip()
 
             # Analyse du CSR
-            matches = re.findall(r'/(\w+)=([\w.]+)', subject_line)
+            matches = re.findall(r'/(\w+)=([\w.@\s-]+)', subject_line)
+            print(matches)
             dict_matches = dict(matches)
 
             # Comparaison du CSR et des valeurs demandées
@@ -147,7 +149,7 @@ def verify():
 
             # Création du CRT
             crt_file = cn + ".crt"
-            cmd = "openssl x509 -req -in " + csr_file + " -CA ACI/intermediateCA.crt -CAkey ACI/intermediate.key -CAcreateserial -out " + crt_file + " -days 365 -sha256 -passin pass:" + "isen"
+            cmd = "openssl x509 -req -in " + csr_file + " -CA ACI/intermediate.crt -CAkey ACI/intermediate.key -CAcreateserial -out " + crt_file + " -days 365 -sha256 -passin pass:" + "isen"
             subprocess.check_output(cmd, shell=True)
 
             print("CRT créé")
@@ -166,7 +168,9 @@ def verify():
 def download():
     key_name = liste_info[7] + ".key"
     certificate_name = liste_info[7] + ".crt"
+    # TODO: Téléchargement à tester
     return send_file(certificate_name, key_name, as_attachment=True)
+
 
 if __name__ == '__main__':
     app.run()
