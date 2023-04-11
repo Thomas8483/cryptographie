@@ -31,7 +31,7 @@ def generate_validation_code():
 
 @app.route('/', methods=['GET'])
 def main():
-    return redirect('/home.html')
+    return render_template('/home.html')
 
 
 @app.route('/home.html', methods=['GET'])
@@ -128,7 +128,6 @@ def verify():
             cmd = f"./static/createCSR.sh '{name}' '{email}' '{country}' '{state}' '{city}' '{org}' '{unit}' '{cn}'"
             subprocess.check_output(cmd, shell=True)
             print("CSR créé")
-
             # Vérification du CSR
             csr_file = cn + ".csr"
             # csr_file = "test13@mailfence.com.csr"
