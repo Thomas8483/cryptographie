@@ -3,6 +3,7 @@ import smtplib
 import ssl
 import subprocess
 import re
+import zipfile
 
 from flask import Flask, request, redirect, render_template, send_file
 
@@ -63,7 +64,7 @@ def revoke():
 
 
 @app.route('/form.html', methods=['GET', 'POST'])
-def formulaire():
+def form():
     print(request.form)
     if request.method == 'POST':
         request.environ['CONTENT_TYPE'] = 'application/json'
@@ -167,8 +168,14 @@ def verify():
 def download():
     key_name = liste_info[7] + ".key"
     certificate_name = liste_info[7] + ".crt"
-    # TODO: Téléchargement à tester
-    return send_file(certificate_name, key_name, as_attachment=True)
+    archive_name = certificate_name + "_and_" + key_name + ".zip"
+
+    # Création de l'archive qui contient les deux fichiers
+    with zipfile.ZipFile(archive_name, 'w') as myzip:
+        myzip.write(certificate_name, arcname=certificate_name)
+        myzip.write(key_name, arcname=key_name)
+
+    return send_file(archive_name, as_attachment=True)
 
 
 if __name__ == '__main__':
