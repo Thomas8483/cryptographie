@@ -52,15 +52,48 @@ def revoke():
 
         liste_info_revoke.clear()
         liste_info_revoke.extend([email, code, reason])
+        find = False
+        find_code = False
 
-        # Révoquer le certificat
+        # Ouvrir le flux de verification
+        file = open("validation_codes.txt.txt", "r")
+        for line in file:
+            email_file, code_file = line.strip().split(", ")
+            print(email_file + ", " + code_file)
+            if email == email_file:
+                find = True
+                if code == code_file:
+                    find_code = True
 
-        print("Certificat révoqué")
+                    # Révoquer le certificat
+                    #cmd =  f"openssl ca -config {config_file} -revoke {cert_file}"
+                    #subprocess.check_output(cmd, shell=True)
+                    print("Certificat révoqué")
 
-        return render_template('revoke_success.html')
+                    # stockage de la revocation
+                    file = open("revoke_list.txt", "a")
+                    file.write(email + ", " + code + ", " + reason + "\n")
+                    file.close()
 
-    else:
-        return render_template('revoke.html')
+                    return render_template('revoke_success.html')
+
+                else:
+                    print("Erreur : mauvais code saisie")
+
+        if not find:
+                print("Erreur : email sans correspondance")
+                print("Erreur : Certificat non révoqué")
+                return render_template('revoke_error.html')
+
+        if not find_code:
+            print("Erreur : code sans correspondance")
+            print("Erreur : Certificat non révoqué")
+            return render_template('revoke_error.html')
+
+        file.close()
+
+
+
 
 
 @app.route('/form.html', methods=['GET', 'POST'])
@@ -134,6 +167,7 @@ def verify():
             cmd = f"./static/createCSR.sh '{name}' '{email}' '{country}' '{state}' '{city}' '{org}' '{unit}' '{cn}'"
             subprocess.check_output(cmd, shell=True)
             print("CSR créé")
+
             # Vérification du CSR
             csr_file = cn + ".csr"
             cmd = "openssl req -noout -subject -in {}".format(csr_file)
