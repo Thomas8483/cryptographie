@@ -75,7 +75,7 @@ def form():
         city = request.form['City']
         org = request.form['Organization']
         unit = request.form['Unit']
-        cn = request.form['CN']
+        cn = request.form['Email']
 
         liste_info.clear()
         liste_info.extend([name, email, country, state, city, org, unit, cn])
@@ -131,7 +131,6 @@ def verify():
             print("CSR créé")
             # Vérification du CSR
             csr_file = cn + ".csr"
-            # csr_file = "test13@mailfence.com.csr"
             cmd = "openssl req -noout -subject -in {}".format(csr_file)
             subject_line = subprocess.check_output(cmd, shell=True).decode().strip()
 
@@ -149,7 +148,7 @@ def verify():
 
             # Création du CRT
             crt_file = cn + ".crt"
-            cmd = "openssl x509 -req -in " + csr_file + " -CA ACI/intermediate.crt -CAkey ACI/intermediate.key -CAcreateserial -out " + crt_file + " -days 365 -sha256 -passin pass:" + "isen"
+            cmd = "openssl x509 -req -in " + csr_file + " -CA ACI/intermediate_ca.crt -CAkey ACI/intermediate_ca.key -CAcreateserial -out " + crt_file + " -days 365 -sha256 -passin pass:" + "isen"
             subprocess.check_output(cmd, shell=True)
 
             print("CRT créé")
@@ -168,12 +167,15 @@ def verify():
 def download():
     key_name = liste_info[7] + ".key"
     certificate_name = liste_info[7] + ".crt"
-    archive_name = certificate_name + "_and_" + key_name + ".zip"
+    archive_name = "key_and_certificate.zip"
 
     # Création de l'archive qui contient les deux fichiers
-    with zipfile.ZipFile(archive_name, 'w') as myzip:
-        myzip.write(certificate_name, arcname=certificate_name)
-        myzip.write(key_name, arcname=key_name)
+    with zipfile.ZipFile(archive_name, mode='w') as myzip:
+        myzip.write(certificate_name, certificate_name)
+        myzip.write(key_name, key_name)
+        myzip.close()
+
+    print("ZIP envoyé")
 
     return send_file(archive_name, as_attachment=True)
 

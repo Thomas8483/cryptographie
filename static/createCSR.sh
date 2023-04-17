@@ -13,4 +13,4 @@ cn=$8
 openssl genpkey -algorithm RSA -out $cn.key -aes256 -pass pass:"isen"
 
 # Génération du CSR
-openssl req -new -key $cn.key -out $cn.csr -subj "/C=$country/ST=$state/L=$city/O=$org/OU=$unit/CN=$cn/emailAddress=$email" -passin pass:"isen"
+openssl req -new -key $cn.key -out $cn.csr -subj "/emailAddress=$email/CN=$cn/O=$org/OU=$unit/C=$country/ST=$state/L=$city" -passin pass:"isen"
