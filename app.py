@@ -173,6 +173,8 @@ def download():
     with zipfile.ZipFile(archive_name, mode='w') as myzip:
         myzip.write(certificate_name, certificate_name)
         myzip.write(key_name, key_name)
+        myzip.write("ACR/root_ca.crt", "root_ca.crt")
+        myzip.write("ACI/intermediate_ca.crt", "intermediate_ca.crt")
         myzip.close()
 
     print("ZIP envoyé")
