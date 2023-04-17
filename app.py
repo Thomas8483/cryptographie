@@ -55,7 +55,7 @@ def revoke():
         find = False
         find_code = False
 
-        # Ouvrir le flux de verification
+        # Ouvrir le flux de vérification
         file = open("validation_codes.txt", "r")
 
         for line in file:
@@ -70,9 +70,12 @@ def revoke():
 
                     certificate_name = "certs/" + email + ".crt"
 
-                    # Révoquer le certificat
-                    cmd = f"openssl ca -config crl_conf.txt -revoke {certificate_name}"
+                    # Ouvre le serveur de l'OCSP
+                    cmd = f"openssl ocsp -port 8888 -index OCSP/index.txt -rsigner OCSP/ocsp.crt -rkey OCSP/ocsp.key -CA ACI/intermediate_ca.crt -ndays 365"
                     subprocess.check_output(cmd, shell=True)
+                    print("Serveur OSCP lancé")
+
+
                     print("Certificat révoqué")
 
                     # stockage de la revocation
@@ -151,7 +154,6 @@ def verify():
         user_info.clear()
         user_info.extend([country, state, city, org, unit, cn])
 
-        # Si l'utilisateur a saisi le bon code
         if user_code == validation_code:
 
             print("Code de validation correct")
@@ -187,6 +189,8 @@ def verify():
             crt_file = "certs/" + cn + ".crt"
             cmd = "openssl x509 -req -in " + csr_file + " -CA ACI/intermediate_ca.crt -CAkey ACI/intermediate_ca.key -CAcreateserial -out " + crt_file + " -days 365 -sha256 -passin pass:" + "isen"
             subprocess.check_output(cmd, shell=True)
+
+            # TODO: Ajouter le certificat créé dans l'OCSP
 
             print("CRT créé")
 

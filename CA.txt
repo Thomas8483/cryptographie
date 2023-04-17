@@ -27,3 +27,15 @@ openssl x509 -noout -purpose -in ACI/intermediate_ca.crt
 
 Révoquation de certificat ?:
 openssl ca -keyfile ACI/intermediate_ca.key -cert ACI/intermediate_ca.crt -revoke certs/test13@mailfence.com.crt -crl_reason test
+
+OCSP:
+openssl ecparam -genkey -name prime256v1 -out OCSP/ocsp.key
+openssl req -new -key OCSP/ocsp.key -out OCSP/ocsp.csr
+openssl x509 -req -in OCSP/ocsp.csr -CA ACI/intermediate_ca.crt -CAkey ACI/intermediate_ca.key -CAcreateserial -out OCSP/ocsp.crt -days 730
+
+Chaîne de certificats :
+cat ACR/root_ca.crt ACI/intermediate_ca.crt OCSP/ocsp.crt > chain.crt
+
+openssl ocsp -port 8888 -index OCSP/index.txt -rsigner OCSP/ocsp.crt -rkey OCSP/ocsp.key -CA ACI/intermediate_ca.crt -ndays 365
+
+openssl ocsp -issuer chain.crt -cert certs/test13@mailfence.com.crt -text -url http://localhost:8888
