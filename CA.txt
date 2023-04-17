@@ -1,24 +1,29 @@
 1) ACR
-
+Création de la clé de l'ACR :
 openssl ecparam -genkey -name prime256v1 -out ACR/root_ca.key
 
+Création du CRT de l'ACR :
 openssl req -new -x509 -key ACR/root_ca.key -out ACR/root_ca.crt -days 3650
 
 
 2)
-
+Création de la clé de l'ACI :
 openssl ecparam -genkey -name prime256v1 -out ACI/intermediate_ca.key
 
+Création du CSR de l'ACI :
 openssl req -new -key ACI/intermediate_ca.key -out ACI/intermediate_ca.csr
 
+Création du CRT de l'ACI :
 openssl x509 -req -in ACI/intermediate_ca.csr -CA ACR/root_ca.crt -CAkey ACR/root_ca.key -CAcreateserial -out ACI/intermediate_ca.crt -days 730 -extfile ACI/intermediate_ca.cnf -extensions v3_intermediate_ca
 
-
-curl 'http://127.0.0.1:5000/' -X POST -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/111.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3' -H 'Accept-Encoding: gzip, deflate, br' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Origin: http://127.0.0.1:5000' -H 'Connection: keep-alive' -H 'Referer: http://127.0.0.1:5000/' -H 'Upgrade-Insecure-Requests: 1' -H 'Sec-Fetch-Dest: document' -H 'Sec-Fetch-Mode: navigate' -H 'Sec-Fetch-Site: same-origin' -H 'Sec-Fetch-User: ?1' --data-raw 'name=test2&email=test14@mailfence.com&country=FR&state=PACA&city=Toulon&org=ISEN&unit=ISEN&cn=test'
-
+Conversion du CRT en PFX :
 openssl pkcs12 -export -inkey ACI/intermediate_ca.key -in ACI/intermediate_ca.crt -name test13 -out test13@mailfence.com.pfx
 
+Affichage de certificat :
 openssl x509 -in test13@mailfence.com.crt -text -noout
+
+Affichage des droits de certificat :
 openssl x509 -noout -purpose -in ACI/intermediate_ca.crt
 
+Révoquation de certificat ?:
 openssl ca -keyfile ACI/intermediate_ca.key -cert ACI/intermediate_ca.crt -revoke certs/test13@mailfence.com.crt -crl_reason test
