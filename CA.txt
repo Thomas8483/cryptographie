@@ -20,3 +20,5 @@ openssl pkcs12 -export -inkey ACI/intermediate_ca.key -in ACI/intermediate_ca.cr
 
 openssl x509 -in test13@mailfence.com.crt -text -noout
 openssl x509 -noout -purpose -in ACI/intermediate_ca.crt
+
+openssl ca -keyfile ACI/intermediate_ca.key -cert ACI/intermediate_ca.crt -revoke certs/test13@mailfence.com.crt -crl_reason test

@@ -56,18 +56,23 @@ def revoke():
         find_code = False
 
         # Ouvrir le flux de verification
-        file = open("validation_codes.txt.txt", "r")
+        file = open("validation_codes.txt", "r")
+
         for line in file:
             email_file, code_file = line.strip().split(", ")
             print(email_file + ", " + code_file)
             if email == email_file:
                 find = True
+                print("Email trouvé")
                 if code == code_file:
                     find_code = True
+                    print("Code de validation correct")
+
+                    certificate_name = "certs/" + email + ".crt"
 
                     # Révoquer le certificat
-                    #cmd =  f"openssl ca -config {config_file} -revoke {cert_file}"
-                    #subprocess.check_output(cmd, shell=True)
+                    cmd = f"openssl ca -config crl_conf.txt -revoke {certificate_name}"
+                    subprocess.check_output(cmd, shell=True)
                     print("Certificat révoqué")
 
                     # stockage de la revocation
@@ -78,22 +83,15 @@ def revoke():
                     return render_template('revoke_success.html')
 
                 else:
-                    print("Erreur : mauvais code saisie")
+                    print("Faux code de validation")
 
-        if not find:
-                print("Erreur : email sans correspondance")
-                print("Erreur : Certificat non révoqué")
-                return render_template('revoke_error.html')
-
-        if not find_code:
-            print("Erreur : code sans correspondance")
-            print("Erreur : Certificat non révoqué")
+        if not find or not find_code:
             return render_template('revoke_error.html')
 
         file.close()
 
-
-
+    else:
+        return render_template('revoke.html')
 
 
 @app.route('/form.html', methods=['GET', 'POST'])
