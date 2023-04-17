@@ -47,11 +47,11 @@ def revoke():
     if request.method == 'POST':
         request.environ['CONTENT_TYPE'] = 'application/json'
         email = request.form['Email']
-        id_certificate = request.form['Id']
-        otp = request.form['OTP']
+        code = request.form['Code']
+        reason = request.form['Reason']
 
         liste_info_revoke.clear()
-        liste_info_revoke.extend([email, id_certificate, otp])
+        liste_info_revoke.extend([email, code, reason])
 
         # Révoquer le certificat
 
@@ -87,7 +87,7 @@ def form():
 
         validation_code = generate_validation_code()
         liste_info.append(validation_code)
-        body = "Vous avez fait une CSR pour " + cn + ". \nLe code de validation est " + validation_code
+        body = "Vous avez fait une CSR pour " + cn + ". \nLe code de validation est " + validation_code + ".\nConservez-le."
         message = f"Subject: {subject}\nFrom: {sender_email}\nTo: {email}\n\n{body}"
         server.sendmail(sender_email, email, message)
         server.quit()
@@ -124,6 +124,11 @@ def verify():
         if user_code == validation_code:
 
             print("Code de validation correct")
+
+            # Écriture du code de validation dans un fichier
+            fichier = open("validation_codes.txt", "a")
+            fichier.write(email + ", " + validation_code + "\n")
+            fichier.close()
 
             # Création du CSR
             cmd = f"./static/createCSR.sh '{name}' '{email}' '{country}' '{state}' '{city}' '{org}' '{unit}' '{cn}'"
@@ -169,7 +174,7 @@ def download():
     certificate_name = liste_info[7] + ".crt"
     archive_name = "key_and_certificate.zip"
 
-    # Création de l'archive qui contient les deux fichiers
+    # Création de l'archive contenant le certificat de l'utilisateur, sa paire de clé, l'ACR, l'ACI
     with zipfile.ZipFile(archive_name, mode='w') as myzip:
         myzip.write(certificate_name, certificate_name)
         myzip.write(key_name, key_name)
