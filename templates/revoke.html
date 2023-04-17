@@ -13,7 +13,17 @@
             <form method="post" action="/revoke.html">
                 <input class="text email" type="email" name="Email" placeholder="Email" required="">
                 <input class="text" type="text" id="code" name="Code" placeholder="Validation Code" required="">
-                <input class="text" type="text" id="reason" name="Reason" placeholder="Reason" required="">
+                <select class="dropdown" id="reason" name="Reason" required="">
+                    <option class="option" value="">--Please choose a reason--</option>
+                    <option class="option" value="unspecified">unspecified</option>
+                    <option class="option" value="keyCompromise">keyCompromise</option>
+                    <option class="option" value="CACompromise">CACompromise</option>
+                    <option class="option" value="affiliationChanged">affiliationChanged</option>
+                    <option class="option" value="superseded">superseded</option>
+                    <option class="option" value="cessationOfOperation">cessationOfOperation</option>
+                    <option class="option" value="certificateHold">certificateHold</option>
+                    <option class="option" value="removeFromCRL">removeFromCRL</option>
+                </select>
                 <div class="wthree-text">
                     <div class="clear"></div>
                 </div>
