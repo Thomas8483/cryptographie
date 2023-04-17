@@ -87,7 +87,7 @@ def form():
 
         validation_code = generate_validation_code()
         liste_info.append(validation_code)
-        body = "Vous avez fait une CSR pour " + cn + ". \nLe code de validation est " + validation_code + ".\nConservez-le."
+        body = "Vous avez fait une demande de certificat pour " + cn + ". \nLe code de validation est " + validation_code + ".\nConservez-le."
         message = f"Subject: {subject}\nFrom: {sender_email}\nTo: {email}\n\n{body}"
         server.sendmail(sender_email, email, message)
         server.quit()
@@ -125,7 +125,7 @@ def verify():
 
             print("Code de validation correct")
 
-            # Écriture du code de validation dans un fichier
+            # Écriture du code de validation dans validations_codes.txt
             fichier = open("validation_codes.txt", "a")
             fichier.write(email + ", " + validation_code + "\n")
             fichier.close()
@@ -134,6 +134,7 @@ def verify():
             cmd = f"./static/createCSR.sh '{name}' '{email}' '{country}' '{state}' '{city}' '{org}' '{unit}' '{cn}'"
             subprocess.check_output(cmd, shell=True)
             print("CSR créé")
+
             # Vérification du CSR
             csr_file = cn + ".csr"
             cmd = "openssl req -noout -subject -in {}".format(csr_file)
@@ -152,7 +153,7 @@ def verify():
                 return render_template('error.html')
 
             # Création du CRT
-            crt_file = cn + ".crt"
+            crt_file = "certs/" + cn + ".crt"
             cmd = "openssl x509 -req -in " + csr_file + " -CA ACI/intermediate_ca.crt -CAkey ACI/intermediate_ca.key -CAcreateserial -out " + crt_file + " -days 365 -sha256 -passin pass:" + "isen"
             subprocess.check_output(cmd, shell=True)
 
