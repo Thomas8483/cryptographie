@@ -10,10 +10,10 @@ from flask import Flask, request, redirect, render_template, send_file
 app = Flask(__name__, static_folder='static')
 
 # Mail
-sender_email = 'test13@mailfence.com'
+sender_email = 'projetcrypto1@mailfence.com'
 smtp_server = 'smtp.mailfence.com'
 smtp_port = 465
-smtp_username = 'test13'
+smtp_username = 'projetcrypto1'
 smtp_password = 'suwtov-zuFza6-mokhus'
 context = ssl.create_default_context()
 subject = "CSR"
@@ -75,10 +75,9 @@ def revoke():
                     subprocess.check_output(cmd, shell=True)
                     print("Serveur OSCP lancé")
 
-
                     print("Certificat révoqué")
 
-                    # stockage de la revocation
+                    # Stockage de la revocation
                     file = open("revoke_list.txt", "a")
                     file.write(email + ", " + code + ", " + reason + "\n")
                     file.close()

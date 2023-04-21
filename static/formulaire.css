@@ -614,7 +614,6 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
     border-radius: 5px;
     box-shadow: 0px 0px 5px 0px rgba(255,255,255,0.2);
     appearance: none;
-    background: url('../static/arrow-down.png') no-repeat right center;
     background-color: rgba(255,255,255,0);
     background-size: auto 50%;
     font-size: 0.9em;
