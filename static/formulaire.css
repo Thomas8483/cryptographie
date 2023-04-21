@@ -147,7 +147,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
     padding: 3em;
   }
 
-  input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"] {
+  input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7",input[type="number"] {
     font-size: 0.9em;
     color: #fff;
     font-weight: 100;
@@ -374,7 +374,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 
   /*-- responsive-design --*/
   @media(max-width:1440px) {
-    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"] {
+    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"],input[type="number"] {
       width: 94%;
     }
   }
@@ -430,7 +430,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
       width: 58%;
     }
 
-    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"] {
+    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"],input[type="number"] {
       width: 93%;
     }
   }
@@ -492,7 +492,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
       padding: 1.8em;
     }
 
-    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"] {
+    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"],input[type="number"] {
       width: 91%;
     }
 
@@ -568,7 +568,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
       margin: 0 0 1em;
     }
 
-    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"] {
+    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"],input[type="number"] {
       width: 89.5%;
       font-size: 0.85em;
     }

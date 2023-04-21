@@ -20,7 +20,7 @@ Conversion du CRT en PFX :
 openssl pkcs12 -export -inkey ACI/intermediate_ca.key -in ACI/intermediate_ca.crt -name test13 -out test13@mailfence.com.pfx
 
 Affichage de certificat :
-openssl x509 -in test13@mailfence.com.crt -text -noout
+openssl x509 -in certs/thomas.jaxel@isen.yncrea.fr.crt -text -noout
 
 Affichage des droits de certificat :
 openssl x509 -noout -purpose -in ACI/intermediate_ca.crt
@@ -31,11 +31,12 @@ openssl ca -keyfile ACI/intermediate_ca.key -cert ACI/intermediate_ca.crt -revok
 OCSP:
 openssl ecparam -genkey -name prime256v1 -out OCSP/ocsp.key
 openssl req -new -key OCSP/ocsp.key -out OCSP/ocsp.csr
-openssl x509 -req -in OCSP/ocsp.csr -CA ACI/intermediate_ca.crt -CAkey ACI/intermediate_ca.key -CAcreateserial -out OCSP/ocsp.crt -days 730
+openssl x509 -req -in OCSP/ocsp.csr -CA ACI/intermediate_ca.crt -CAkey ACI/intermediate_ca.key -CAcreateserial -out OCSP/ocsp.crt -days 730 -extfile OCSP/ocsp.conf
 
 Chaîne de certificats :
 cat ACR/root_ca.crt ACI/intermediate_ca.crt OCSP/ocsp.crt > chain.crt
 
 openssl ocsp -port 8888 -index OCSP/index.txt -rsigner OCSP/ocsp.crt -rkey OCSP/ocsp.key -CA ACI/intermediate_ca.crt -ndays 365
 
-openssl ocsp -issuer chain.crt -cert certs/test13@mailfence.com.crt -text -url http://localhost:8888
+openssl ocsp -CAfile chain.pem -issuer chain.pem -cert certs/thomas.jaxel@isen.yncrea.fr.crt -text -url http://localhost:8888
+

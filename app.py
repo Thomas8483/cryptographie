@@ -14,13 +14,31 @@ sender_email = 'projetcrypto1@mailfence.com'
 smtp_server = 'smtp.mailfence.com'
 smtp_port = 465
 smtp_username = 'projetcrypto1'
-smtp_password = 'suwtov-zuFza6-mokhus'
+smtp_password = 'doqro3-Roqtis-coxvop'
 context = ssl.create_default_context()
 subject = "CSR"
 
 liste_info = []
 liste_info_revoke = []
 user_info = []
+
+
+def ocsp_launch():
+    cmd = f"openssl ocsp -port 8888 -index OCSP/index.txt -rsigner OCSP/ocsp.crt -rkey OCSP/ocsp.key -CA ACI_old/intermediate_ca.crt -ndays 365"
+    subprocess.check_output(cmd, shell=True)
+    print("Serveur OSCP: lancé")
+
+
+def ocsp_revokation():
+    cmd = f"openssl ca -config openssl.cnf -revoke"
+    subprocess.check_output(cmd, shell=True)
+    print("Serveur OSCP: revocation effectué")
+
+
+def ocsp_renew():
+    cmd = f"openssl ca -config openssl.cnf -renew -keyfile server.key -cert server.crt -out new_server.crt"
+    subprocess.check_output(cmd, shell=True)
+    print("Serveur OSCP: renouvellement effectué")
 
 
 def generate_validation_code():
@@ -71,7 +89,7 @@ def revoke():
                     certificate_name = "certs/" + email + ".crt"
 
                     # Ouvre le serveur de l'OCSP
-                    cmd = f"openssl ocsp -port 8888 -index OCSP/index.txt -rsigner OCSP/ocsp.crt -rkey OCSP/ocsp.key -CA ACI/intermediate_ca.crt -ndays 365"
+                    cmd = f"openssl ocsp -port 8888 -index OCSP/index.txt -rsigner OCSP/ocsp.crt -rkey OCSP/ocsp.key -CA ACI_old/intermediate_ca.crt -ndays 365"
                     subprocess.check_output(cmd, shell=True)
                     print("Serveur OSCP lancé")
 
@@ -153,7 +171,8 @@ def verify():
         user_info.clear()
         user_info.extend([country, state, city, org, unit, cn])
 
-        if user_code == validation_code:
+        # TODO: a tester
+        if user_code == validation_code and validation_code.isdigit():
 
             print("Code de validation correct")
 
@@ -186,10 +205,11 @@ def verify():
 
             # Création du CRT
             crt_file = "certs/" + cn + ".crt"
-            cmd = "openssl x509 -req -in " + csr_file + " -CA ACI/intermediate_ca.crt -CAkey ACI/intermediate_ca.key -CAcreateserial -out " + crt_file + " -days 365 -sha256 -passin pass:" + "isen"
+            cmd = "openssl x509 -req -in " + csr_file + " -CA ACI_old/intermediate_ca.crt -CAkey ACI_old/intermediate_ca.key -CAcreateserial -out " + crt_file + " -days 365 -sha256 -passin pass:" + "isen"
             subprocess.check_output(cmd, shell=True)
 
             # TODO: Ajouter le certificat créé dans l'OCSP
+            cmd = "OCSP/ocsp.sh"
 
             print("CRT créé")
 
@@ -206,15 +226,15 @@ def verify():
 @app.route('/download', methods=['GET'])
 def download():
     key_name = liste_info[7] + ".key"
-    certificate_name = liste_info[7] + ".crt"
+    certificate_name = "certs/" + liste_info[7] + ".crt"
     archive_name = "key_and_certificate.zip"
 
-    # Création de l'archive contenant le certificat de l'utilisateur, sa paire de clé, l'ACR, l'ACI
+    # Création de l'archive contenant le certificat de l'utilisateur, sa paire de clé, l'ACR, l'ACI_old
     with zipfile.ZipFile(archive_name, mode='w') as myzip:
         myzip.write(certificate_name, certificate_name)
         myzip.write(key_name, key_name)
         myzip.write("ACR/root_ca.crt", "root_ca.crt")
-        myzip.write("ACI/intermediate_ca.crt", "intermediate_ca.crt")
+        myzip.write("ACI_old/intermediate_ca.crt", "intermediate_ca.crt")
         myzip.close()
 
     print("ZIP envoyé")

@@ -14,3 +14,23 @@ CN = ACINTERMEDIATE
 [v3_intermediate_ca]
 basicConstraints = CA:true
 keyUsage = cRLSign, keyCertSign
+
+# OCSP settings
+[ ocsp ]
+# OCSP responder URI
+# Replace example.com with your actual domain or hostname
+# Replace 8888 with the actual port number you're using for your OCSP responder
+ocsp_uri = http://localhost:8888
+
+# OCSP certificate and private key
+ocsp_cert = OCSP/ocsp.crt
+ocsp_key = OCSP/ocsp.key
+
+# OCSP signing settings
+# Replace intermediate_ca.crt and intermediate_ca.key with your actual intermediate CA certificate and private key
+ocsp_responder = keyfile:OCSP/ocsp.key,certfile:OCSP/ocsp.crt
+ocsp_responder_key = ACI/intermediate_ca.key
+ocsp_responder_cert = ACI/intermediate_ca.crt
+
+# Default validity period for OCSP responses
+ocsp_maxage = 86400 # 1 day
