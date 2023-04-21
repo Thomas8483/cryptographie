@@ -147,7 +147,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
     padding: 3em;
   }
 
-  input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7",input[type="number"] {
+  input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"],input[type="number"] {
     font-size: 0.9em;
     color: #fff;
     font-weight: 100;
@@ -187,6 +187,22 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
     transform: translateY(-30px);
     visibility: visible !important;
   }
+
+.select {
+    width: 100%;
+    padding: 0.5em;
+    margin: 0.5em 0;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px 0px rgba(255,255,255,0.2);
+    appearance: none;
+    background: url('../static/arrow-down.png') no-repeat right center;
+    background-color: rgba(255,255,255,0);
+    background-size: auto 50%;
+    font-size: 0.9em;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+}
 
   ::-webkit-input-placeholder {
     color: #fff;
@@ -374,7 +390,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 
   /*-- responsive-design --*/
   @media(max-width:1440px) {
-    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"],input[type="number"] {
+    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"] {
       width: 94%;
     }
   }
@@ -430,7 +446,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
       width: 58%;
     }
 
-    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"],input[type="number"] {
+    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"] {
       width: 93%;
     }
   }
@@ -492,7 +508,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
       padding: 1.8em;
     }
 
-    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"],input[type="number"] {
+    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"] {
       width: 91%;
     }
 
@@ -568,7 +584,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
       margin: 0 0 1em;
     }
 
-    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"],input[type="number"] {
+    input[type="text"], input[type="email"],input[type="text2"],input[type="text3"],input[type="text4"],input[type="text5"],input[type="text6"],input[type="text7"] {
       width: 89.5%;
       font-size: 0.85em;
     }
