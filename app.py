@@ -2,7 +2,6 @@ import random
 import smtplib
 import ssl
 import subprocess
-import re
 import zipfile
 import multiprocessing
 import time
@@ -23,13 +22,6 @@ subject = "CSR"
 liste_info = []
 liste_info_revoke = []
 user_info = []
-
-
-def create_regex_dict(lst):
-    regex_dict = {}
-    for item in lst:
-        regex_dict[item] = re.compile(item)
-    return regex_dict
 
 
 def verifier_liste(liste, dictionnaire_regex):
