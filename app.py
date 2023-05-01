@@ -24,10 +24,6 @@ liste_info_revoke = []
 user_info = []
 
 
-def verifier_liste(liste, dictionnaire_regex):
-    return all(dictionnaire_regex.fullmatch(element) for element in liste)
-
-
 def generate_validation_code():
     code = ""
     for i in range(6):
