@@ -13,7 +13,7 @@ Download your certificate in .crt and your key pair generated with our intermedi
 - ACR/ contains all the files related to the root Certificaton Authority.
 - ACI/ contains all the files related to the intermediate Certificaton Authority.
 - templates/ contains the HTML.
-- static contains the CSS and the createCSR script used by our server.
+- static/ contains the CSS and the createCSR script used by our server.
 
 
 ## Using
