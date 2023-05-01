@@ -10,9 +10,10 @@ Download your certificate in .crt and your key pair generated with our intermedi
 
 ## Documentation
 
-- Fill in the form:
-  - The email field is used to send the verification code.
-  - The common name one is the name which will be certified.
+- ACR/ contains all the files related to the root Certificaton Authority.
+- ACI/ contains all the files related to the intermediate Certificaton Authority.
+- templates/ contains the HTML.
+- static contains the CSS and the createCSR script used by our server.
 
 
 ## Using
@@ -23,6 +24,10 @@ Open a terminal within the "cryptographie" folder:
 python3 app.py
 ```
 Connect to http://127.0.0.1:5000 with a Web browser
+
+- Fill in the form:
+  - The email field is used to send the verification code.
+  - The common name one is the name which will be certified.
 
 ## Collaborators
 
