@@ -4,6 +4,8 @@ import ssl
 import subprocess
 import re
 import zipfile
+import multiprocessing
+import time
 
 from flask import Flask, request, redirect, render_template, send_file
 
@@ -34,24 +36,6 @@ def verifier_liste(liste, dictionnaire_regex):
     return all(dictionnaire_regex.fullmatch(element) for element in liste)
 
 
-def ocsp_launch():
-    cmd = f"openssl ocsp -port 8888 -index OCSP/index.txt -rsigner OCSP/ocsp.crt -rkey OCSP/ocsp.key -CA ACI_old/intermediate_ca.crt -ndays 365"
-    subprocess.check_output(cmd, shell=True)
-    print("Serveur OSCP: lancé")
-
-
-def ocsp_revokation():
-    cmd = f"openssl ca -config openssl.cnf -revoke"
-    subprocess.check_output(cmd, shell=True)
-    print("Serveur OSCP: revocation effectué")
-
-
-def ocsp_renew():
-    cmd = f"openssl ca -config openssl.cnf -renew -keyfile server.key -cert server.crt -out new_server.crt"
-    subprocess.check_output(cmd, shell=True)
-    print("Serveur OSCP: renouvellement effectué")
-
-
 def generate_validation_code():
     code = ""
     for i in range(6):
@@ -77,7 +61,6 @@ def home():
     return render_template('home.html')
 
 
-# TODO: Révoquer le certificat(Faire une liste de certificats valides(OCSP))
 @app.route('/revoke.html', methods=['GET', 'POST'])
 def revoke():
     print(request.form)
@@ -101,18 +84,25 @@ def revoke():
             if email == email_file:
                 find = True
                 print("Email trouvé")
-                if code == code_file:
+                if code == code_file and check_code(code):
                     find_code = True
                     print("Code de validation correct")
 
                     certificate_name = "certs/" + email + ".crt"
 
-                    # Ouvre le serveur de l'OCSP
-                    cmd = f"openssl ocsp -port 8888 -index OCSP/index.txt -rsigner OCSP/ocsp.crt -rkey OCSP/ocsp.key -CA ACI_old/intermediate_ca.crt -ndays 365"
-                    subprocess.check_output(cmd, shell=True)
-                    print("Serveur OSCP lancé")
+                    # Gère le mutliprocessing
+                    if hasattr(multiprocessing, 'freeze_support'):
+                        multiprocessing.freeze_support()
 
-                    print("Certificat révoqué")
+                    # Lance l'OCSP dans un process séparé
+                    ocsp_process = multiprocessing.Process(target=start_ocsp_responder)
+                    ocsp_process.start()
+
+                    time.sleep(2)
+
+                    send_ocsp_revoke_request(certificate_name, reason)
+
+                    ocsp_process.join()
 
                     # Stockage de la revocation
                     file = open("revoke_list.txt", "a")
@@ -170,6 +160,29 @@ def form():
         return render_template('form.html')
 
 
+def start_ocsp_responder():
+    cmd = "OCSP/ocsp.sh"
+    subprocess.Popen(cmd, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+
+def send_ocsp_request(cert):
+    cmd = "openssl ocsp -CAfile chain.pem -issuer chain.pem -cert " + cert + " -text -url http://localhost:8888"
+    output = subprocess.Popen(cmd, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = output.communicate()
+    print(stdout)
+    print(stderr)
+    print("Requete envoyee")
+
+
+def send_ocsp_revoke_request(cert, reason):
+    cmd = "openssl ca -keyfile ACI/intermediate_ca.key -cert ACI/intermediate_ca.crt -revoke " + cert + " -crl_reason " + reason
+    output = subprocess.Popen(cmd, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = output.communicate()
+    print(stdout)
+    print(stderr)
+    print("Requete envoyee")
+
+
 @app.route('/verification.html', methods=['GET', 'POST'])
 def verify():
     print(request.form)
@@ -187,9 +200,12 @@ def verify():
         cn = liste_info[7]
         validation_code = liste_info[8]
 
+        # Pour Linux
         user_information = "subject=emailAddress = " + email + ", CN = " + cn + ", O = " + org + ", OU = " + unit + ", C = " + country + ", ST = " + state + ", L = " + city
+        # Pour MacOS
+        user_information2 = "subject=/emailAddress=" + email + "/CN=" + cn + "/O=" + org + "/OU=" + unit + "/C=" + country + "/ST=" + state + "/L=" + city
 
-        if user_code == validation_code and check_code(validation_code) :
+        if user_code == validation_code and check_code(validation_code):
 
             print("Code de validation correct")
 
@@ -208,7 +224,7 @@ def verify():
             cmd = "openssl req -noout -subject -in {}".format(csr_file)
             subject_line = subprocess.check_output(cmd, shell=True).decode().strip()
 
-            if user_information == subject_line :
+            if user_information == subject_line or user_information2 == subject_line:
                 print("CSR correct")
             else:
                 print("Erreur(s) dans le CSR")
@@ -216,17 +232,23 @@ def verify():
 
             # Création du CRT
             crt_file = "certs/" + cn + ".crt"
-            cmd = "openssl x509 -req -in " + csr_file + " -CA ACI_old/intermediate_ca.crt -CAkey ACI_old/intermediate_ca.key -CAcreateserial -out " + crt_file + " -days 365 -sha256 -passin pass:" + "isen"
+            cmd = "openssl x509 -req -in " + csr_file + " -CA ACI/intermediate_ca.crt -CAkey ACI/intermediate_ca.key -CAcreateserial -out " + crt_file + " -days 365 -sha256 -passin pass:" + "isen"
             subprocess.check_output(cmd, shell=True)
             print("CRT créé")
 
-            #Ajout du cert à l'ocps
-            cmd = "OCSP/ocsp.sh"
-            print("OCSP lancé")
+            # Gère le mutliprocessing
+            if hasattr(multiprocessing, 'freeze_support'):
+                multiprocessing.freeze_support()
 
-            cmd = "openssl ocsp -CAfile chain.pem -issuer chain.pem -cert " + crt_file + " -text -url http://localhost:8888"
-            subprocess.check_output(cmd, shell=True)
-            print("CRT envoyé")
+            # Lance l'OCSP dans un process séparé
+            ocsp_process = multiprocessing.Process(target=start_ocsp_responder)
+            ocsp_process.start()
+
+            time.sleep(2)
+
+            send_ocsp_request("certs/projetcrypto1@mailfence.com.crt")
+
+            ocsp_process.join()
 
             return render_template('success.html')
 
@@ -244,12 +266,12 @@ def download():
     certificate_name = "certs/" + liste_info[7] + ".crt"
     archive_name = "key_and_certificate.zip"
 
-    # Création de l'archive contenant le certificat de l'utilisateur, sa paire de clé, l'ACR, l'ACI_old
+    # Création de l'archive contenant le certificat de l'utilisateur, sa paire de clé, l'ACR, l'ACI
     with zipfile.ZipFile(archive_name, mode='w') as myzip:
         myzip.write(certificate_name, certificate_name)
         myzip.write(key_name, key_name)
         myzip.write("ACR/root_ca.crt", "root_ca.crt")
-        myzip.write("ACI_old/intermediate_ca.crt", "intermediate_ca.crt")
+        myzip.write("ACI/intermediate_ca.crt", "intermediate_ca.crt")
         myzip.close()
 
     print("ZIP envoyé")
