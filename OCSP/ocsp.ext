@@ -1,0 +1,6 @@
+[v3_OCSP]
+authorityKeyIdentifier = keyid,issuer
+basicConstraints = CA:false
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment
+extendedKeyUsage = OCSPSigning
+authorityInfoAccess = caIssuers;URI:http://localhost:8888/ACR/root_ca.crt

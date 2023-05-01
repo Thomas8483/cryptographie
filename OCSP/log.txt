@@ -1,0 +1,88 @@
+OCSP Request Data:
+    Version: 1 (0x0)
+    Requestor List:
+        Certificate ID:
+          Hash Algorithm: sha1
+          Issuer Name Hash: E938DEF2BB312D4EE98FD7E385370F3AE8E4D13B
+          Issuer Key Hash: 1E4E0C6BC452B9FC0787797FEA51E162C6DF364B
+          Serial Number: DA8B37C1DD1F9877
+    Request Extensions:
+        OCSP Nonce: 
+            04104EC0571946A4D2DFBA3427A4D4864C6B
+OCSP Response Data:
+    OCSP Response Status: successful (0x0)
+    Response Type: Basic OCSP Response
+    Version: 1 (0x0)
+    Responder Id: C = FR, ST = PACA, L = TOULON, O = ISEN, OU = M1, CN = OCSP
+    Produced At: May  1 09:58:58 2023 GMT
+    Responses:
+    Certificate ID:
+      Hash Algorithm: sha1
+      Issuer Name Hash: E938DEF2BB312D4EE98FD7E385370F3AE8E4D13B
+      Issuer Key Hash: 1E4E0C6BC452B9FC0787797FEA51E162C6DF364B
+      Serial Number: DA8B37C1DD1F9877
+    Cert Status: unknown
+    This Update: May  1 09:58:58 2023 GMT
+
+    Response Extensions:
+        OCSP Nonce: 
+            04104EC0571946A4D2DFBA3427A4D4864C6B
+    Signature Algorithm: sha256WithRSAEncryption
+    Signature Value:
+        12:24:5a:2b:79:57:2c:24:a9:b4:0e:dd:a8:c7:fb:07:0f:ab:
+        d6:df:20:31:d0:73:d3:03:f2:2e:b5:ec:2e:71:3b:a1:f0:32:
+        4f:e2:8a:94:4c:c8:d2:3f:9f:09:9f:71:dc:2d:b5:94:3f:c4:
+        4d:e9:11:99:c5:f1:b7:83:b8:97:01:6e:e8:73:03:6e:68:b6:
+        38:36:09:68:42:f5:d6:da:3d:6e:5b:a7:c6:ea:a3:0d:0c:30:
+        49:cd:71:d2:83:5e:8f:6f:af:9f:89:c8:08:80:a9:4c:1c:14:
+        8e:66:3b:f8:e8:8a:cd:cd:47:88:42:18:56:e8:f7:1d:db:21:
+        e6:1b:9f:67:04:8f:87:75:56:9d:2e:d0:c9:ee:d1:0e:be:54:
+        0d:50:c5:15:42:e7:32:b3:a2:ee:eb:92:3b:18:8c:86:8d:bf:
+        85:af:39:79:4b:a2:9b:0b:38:58:bd:06:34:9a:06:29:9e:0a:
+        9f:a7:ce:ee:28:c0:a1:ad:2d:26:6b:17:4e:45:08:e6:0c:e2:
+        23:16:47:48:4f:e6:20:b7:33:54:cd:f1:a8:5a:fd:fd:83:c4:
+        2b:8e:d0:55:76:3c:c8:83:f6:65:eb:59:0a:ed:e5:f2:40:5d:
+        69:31:58:4f:75:46:78:5e:96:96:0f:02:8c:f5:90:61:49:78:
+        e9:a5:28:05
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            08:b7:28:a5:50:ea:93:a4:1d:58:89:cc:c7:95:bd:c2:9f:3b:05:fc
+        Signature Algorithm: ecdsa-with-SHA256
+        Issuer: C=FR, ST=PACA, L=TOULON, O=ISEN, OU=M1, CN=ACINTERMEDIATE
+        Validity
+            Not Before: May  1 09:52:34 2023 GMT
+            Not After : Apr 30 09:52:34 2024 GMT
+        Subject: C=FR, ST=PACA, L=TOULON, O=ISEN, OU=M1, CN=OCSP
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:c2:c2:36:79:7a:b3:1b:38:68:4b:7e:b9:3a:ed:
+                    83:82:3e:49:66:7f:21:a6:26:56:9c:c9:b3:d9:36:
+                    09:6a:0f:c7:7b:b9:3e:7e:ab:55:f2:eb:49:52:be:
+                    a7:0c:1b:a3:f4:2d:a0:d5:8b:57:1e:93:44:9c:35:
+                    fb:90:cd:42:ce:f7:80:f5:cf:34:48:c9:09:30:7b:
+                    16:04:12:6d:c8:3d:99:20:da:2a:c9:f8:22:67:52:
+                    f1:ce:c9:e1:08:ac:1d:e1:3f:dd:d8:23:2b:e1:21:
+                    87:2f:04:24:56:8d:00:67:f8:d1:d5:17:fc:ba:ac:
+                    33:57:ba:2c:d1:d6:4b:a2:d0:3d:13:07:9b:7a:92:
+                    cb:bb:4f:4d:0a:b7:1d:91:3f:59:54:20:72:16:2d:
+                    de:34:80:e7:c7:a7:1c:1e:35:7c:93:2c:f5:61:14:
+                    2f:47:83:0f:be:e1:06:4d:7a:74:bf:92:98:76:67:
+                    3a:45:65:fd:7e:c8:d3:fb:ac:eb:33:a2:b5:1b:a3:
+                    f4:f5:68:a3:d1:04:9a:42:9d:f1:33:e8:a9:f2:9e:
+                    ef:34:af:b8:15:18:93:5b:a2:ea:b8:3c:43:08:86:
+                    5c:20:11:77:f0:79:b2:47:81:1d:11:32:44:c6:5c:
+                    53:a5:ff:22:db:5c:a7:1e:5f:24:9f:74:fd:49:fd:
+                    46:e1
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Authority Key Identifier: 
+                DirName:/C=FR/ST=PACA/L=TOULON/O=ISEN/OU=M1/CN=ACROOT
+                serial:C0:0F:8A:4F:2A:6B:1D:D3
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 Key Usage: 
+                Digital Signature, No

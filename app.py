@@ -23,6 +23,17 @@ liste_info_revoke = []
 user_info = []
 
 
+def create_regex_dict(lst):
+    regex_dict = {}
+    for item in lst:
+        regex_dict[item] = re.compile(item)
+    return regex_dict
+
+
+def verifier_liste(liste, dictionnaire_regex):
+    return all(dictionnaire_regex.fullmatch(element) for element in liste)
+
+
 def ocsp_launch():
     cmd = f"openssl ocsp -port 8888 -index OCSP/index.txt -rsigner OCSP/ocsp.crt -rkey OCSP/ocsp.key -CA ACI_old/intermediate_ca.crt -ndays 365"
     subprocess.check_output(cmd, shell=True)
@@ -46,6 +57,14 @@ def generate_validation_code():
     for i in range(6):
         code += str(random.randint(0, 9))
     return code
+
+
+def check_code(code):
+    digits = '0123456789'
+    for char in code:
+        if char not in digits:
+            return False
+    return True
 
 
 @app.route('/', methods=['GET'])
@@ -168,11 +187,9 @@ def verify():
         cn = liste_info[7]
         validation_code = liste_info[8]
 
-        user_info.clear()
-        user_info.extend([country, state, city, org, unit, cn])
+        user_information = "subject=emailAddress = " + email + ", CN = " + cn + ", O = " + org + ", OU = " + unit + ", C = " + country + ", ST = " + state + ", L = " + city
 
-        # TODO: a tester
-        if user_code == validation_code and validation_code.isdigit():
+        if user_code == validation_code and check_code(validation_code) :
 
             print("Code de validation correct")
 
@@ -191,13 +208,7 @@ def verify():
             cmd = "openssl req -noout -subject -in {}".format(csr_file)
             subject_line = subprocess.check_output(cmd, shell=True).decode().strip()
 
-            # Analyse du CSR
-            matches = re.findall(r'/(\w+)=([\w.@\s-]+)', subject_line)
-            print(matches)
-            dict_matches = dict(matches)
-
-            # Comparaison du CSR et des valeurs demandées
-            if all(value in dict_matches.values() for value in user_info):
+            if user_information == subject_line :
                 print("CSR correct")
             else:
                 print("Erreur(s) dans le CSR")
@@ -207,11 +218,15 @@ def verify():
             crt_file = "certs/" + cn + ".crt"
             cmd = "openssl x509 -req -in " + csr_file + " -CA ACI_old/intermediate_ca.crt -CAkey ACI_old/intermediate_ca.key -CAcreateserial -out " + crt_file + " -days 365 -sha256 -passin pass:" + "isen"
             subprocess.check_output(cmd, shell=True)
-
-            # TODO: Ajouter le certificat créé dans l'OCSP
-            cmd = "OCSP/ocsp.sh"
-
             print("CRT créé")
+
+            #Ajout du cert à l'ocps
+            cmd = "OCSP/ocsp.sh"
+            print("OCSP lancé")
+
+            cmd = "openssl ocsp -CAfile chain.pem -issuer chain.pem -cert " + crt_file + " -text -url http://localhost:8888"
+            subprocess.check_output(cmd, shell=True)
+            print("CRT envoyé")
 
             return render_template('success.html')
 
